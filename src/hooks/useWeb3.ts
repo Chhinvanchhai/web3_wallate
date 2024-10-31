@@ -44,8 +44,8 @@ export function useWeb3() {
           method: 'wallet_switchEthereumChain',
           params: [{ chainId: network.chainId }],
         });
-      } catch (switchError: any) {
-        if (switchError.code === 4902) {
+      } catch (switchError) {
+        if ((switchError as { code: number }).code === 4902) {
           await window.ethereum.request({
             method: 'wallet_addEthereumChain',
             params: [network],
@@ -78,11 +78,36 @@ export function useWeb3() {
       });
 
       return () => {
-        window.ethereum.removeListener('accountsChanged', () => {});
-        window.ethereum.removeListener('chainChanged', () => {});
+        window.ethereum?.removeListener('accountsChanged', () => {});
+        window.ethereum?.removeListener('chainChanged', () => {});
       };
     }
   }, []);
+
+  // Modified auto-connect effect
+  useEffect(() => {
+    const checkAndConnectWallet = async () => {
+      
+      if (window.ethereum) {
+        try {
+          const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+          if (accounts.length > 0) {
+            const provider = new ethers.BrowserProvider(window.ethereum);
+            const network = await provider.getNetwork();
+            
+            setProvider(provider);
+            setAccount(accounts[0]);
+            setChainId('0x' + network.chainId.toString(16));
+            // Don't show toast for auto-connect
+          }
+        } catch (error) {
+          console.error('Error auto-connecting wallet:', error);
+        }
+      }
+    };
+
+    checkAndConnectWallet();
+  }, []); // Empty dependency array is fine here since this should only run once
 
   return {
     account,

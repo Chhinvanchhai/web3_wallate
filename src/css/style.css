@@ -1,0 +1,16 @@
+/* Toast styles */
+.Toastify__toast {
+  background: #1f2937 !important;
+  color: white !important;
+  border-radius: 0.5rem !important;
+  padding: 1rem !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+.Toastify__toast--success {
+  border-left: 4px solid #10B981 !important;
+}
+
+.Toastify__toast--error {
+  border-left: 4px solid #EF4444 !important;
+}
